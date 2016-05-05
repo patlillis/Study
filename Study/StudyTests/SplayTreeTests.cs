@@ -30,9 +30,9 @@ namespace StudyTests
 					int value1 = this._Rand.Next();
 					int value2 = this._Rand.Next();
 
-					t.Insert(key, value1);
+					t.Add(key, value1);
 					Assert.AreEqual(t.Find(key), value1);
-					t.Insert(key, value2);
+					t.Add(key, value2);
 					Assert.AreEqual(t.Find(key), value2);
 
 					addedKeys[key] = value2;
@@ -57,12 +57,12 @@ namespace StudyTests
 				int key = this._Rand.Next();
 				addedKeys.Add(key);
 
-				t.Insert(key, this._Rand.Next());
+				t.Add(key, this._Rand.Next());
 			}
 
 			foreach (var key in addedKeys)
 			{
-				t.Delete(key);
+				t.Remove(key);
 
 				Exception ex = null;
 				try
@@ -94,21 +94,21 @@ namespace StudyTests
 					if (addedKeys.Add(key))
 						count++;
 
-					t.Insert(key, this._Rand.Next());
+					t.Add(key, this._Rand.Next());
 					Assert.AreEqual(t.Count, count);
-					t.Insert(key, this._Rand.Next());
+					t.Add(key, this._Rand.Next());
 					Assert.AreEqual(t.Count, count);
 				}
 
 				count = t.Count;
 				foreach (int i in addedKeys)
 				{
-					t.Delete(i);
+					t.Remove(i);
 					count--;
 
 					Assert.AreEqual(t.Count, count);
 
-					t.Delete(i);
+					t.Remove(i);
 					Assert.AreEqual(t.Count, count);
 				}
 
@@ -116,10 +116,10 @@ namespace StudyTests
 				{
 					int key = this._Rand.Next();
 
-					t.Insert(key, this._Rand.Next());
+					t.Add(key, this._Rand.Next());
 					Assert.AreEqual(t.Count, 1);
 
-					t.Delete(key);
+					t.Remove(key);
 					Assert.AreEqual(t.Count, 0);
 				}
 			}

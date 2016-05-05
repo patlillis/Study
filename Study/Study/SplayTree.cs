@@ -10,7 +10,7 @@ namespace Study
 	/// <summary>
 	/// A self-adjusting binary search tree with the additional property that recently accessed elements are quick to access again.
 	/// </summary>
-	public sealed class SplayTree<TKey, TValue> where TKey : IComparable<TKey>
+	public sealed class SplayTree<TKey, TValue> : IDictionary<TKey, TValue> where TKey : IComparable<TKey>
 	{
 		/// <summary>
 		/// Inner nodes
@@ -34,6 +34,34 @@ namespace Study
 		private Node _Root { get; set; }
 
 		public int Count { get; set; }
+
+		public ICollection<TKey> Keys
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public ICollection<TValue> Values
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public bool IsReadOnly
+		{
+			get { return false; }
+		}
+
+		public TValue this[TKey key]
+		{
+			get { return this.Find(key); }
+
+			set { this.Add(key, value); }
+		}
 
 
 		#region Private Methods
@@ -255,16 +283,19 @@ namespace Study
 			return n;
 		}
 
-		#endregion
-
 		/// <summary>
-		/// Insert new value
+		/// Add key/value pair to tree
 		/// </summary>
-		public void Insert(TKey key, TValue value)
+		/// <param name="key">Key to add</param>
+		/// <param name="value">Value associated with key</param>
+		/// <param name="overwrite">If key is already present, should it be overwritten with new value?</param>
+		/// <returns>True if key was set to value, false otherwise</returns>
+		private bool _Add(TKey key, TValue value, bool overwrite)
 		{
 			// Get the parent of the position we should insert
 			Node node = this._Root;
 			Node parent = null;
+			bool inserted = false;
 
 			while (node != null)
 			{
@@ -284,7 +315,11 @@ namespace Study
 				else
 				{
 					// Key should go right here!
-					node.Value = value;
+					if (overwrite)
+					{
+						node.Value = value;
+						inserted = true;
+                    }
 					break;
 				}
 			}
@@ -303,35 +338,16 @@ namespace Study
 					parent.Right = node;
 
 				this.Count++;
-			}
+				inserted = true;
+            }
 
 			this._Splay(node);
+
+			return inserted;
 		}
 
-		/// <summary>
-		/// Find the value in the tree associated with the key
-		/// </summary>
-		/// <exception cref="KeyNotFoundException">Thrown when the given key is not present.</exception>
-		public TValue Find(TKey key)
+		private void _Remove(Node node)
 		{
-			// Find appropriate node
-			Node node = this._FindNode(key);
-
-			// Return or throw exception
-			if (node == null)
-				throw new KeyNotFoundException($"Could not find value for key {key}.");
-			else
-				return node.Value;
-		}
-
-		/// <summary>
-		/// Delete the value associated with this key. Allows deletion of non-present keys
-		/// </summary>
-		public void Delete(TKey key)
-		{
-			// Find appropriate node
-			Node node = this._FindNode(key);
-
 			// If key wasn't in tree, don't worry about it
 			if (node != null)
 			{
@@ -366,6 +382,176 @@ namespace Study
 
 				this.Count--;
 			}
+		}
+
+		private IEnumerable<Node> _GetSubTree(Node node)
+		{
+			if (node != null)
+			{
+				if (node.Left != null)
+				{
+					foreach (Node l in this._GetSubTree(node.Left))
+						yield return l;
+				}
+
+				yield return node;
+
+				if (node.Right != null)
+				{
+					foreach (Node r in this._GetSubTree(node.Right))
+						yield return r;
+				}
+			}
+
+			yield break;
+		}
+
+		#endregion
+
+
+		/// <summary>
+		/// Add new value
+		/// </summary>
+		/// <exception cref="ArgumentException">Thrown when an element with the same key already exists.</exception>
+		public void Add(TKey key, TValue value)
+		{
+			bool added = this._Add(key, value, false);
+
+			if (!added)
+				throw new ArgumentException($"An element with the key {key} already exists.");
+		}
+
+		/// <summary>
+		/// Find the value in the tree associated with the key
+		/// </summary>
+		/// <exception cref="KeyNotFoundException">Thrown when the given key is not present.</exception>
+		public TValue Find(TKey key)
+		{
+			// Find appropriate node
+			Node node = this._FindNode(key);
+
+			// Return or throw exception
+			if (node == null)
+				throw new KeyNotFoundException($"Could not find value for key {key}.");
+			else
+				return node.Value;
+		}
+
+		/// <summary>
+		/// Delete the value associated with this key. Allows deletion of non-present keys
+		/// </summary>
+		public bool Remove(TKey key)
+		{
+			// Find appropriate node
+			Node node = this._FindNode(key);
+
+			if (node != null)
+			{
+				this._Remove(node);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public bool ContainsKey(TKey key)
+		{
+			return this._FindNode(key) != null;
+		}
+
+		public bool TryGetValue(TKey key, out TValue value)
+		{
+			Node node = this._FindNode(key);
+
+			if (node != null)
+			{
+				value = node.Value;
+				return true;
+			}
+			else
+			{
+				value = default(TValue);
+				return false;
+			}
+		}
+
+		public void Add(KeyValuePair<TKey, TValue> item)
+		{
+			this.Add(item.Key, item.Value);
+		}
+
+		public void Clear()
+		{
+			this._Root = null;
+			this.Count = 0;
+		}
+
+		public bool Contains(KeyValuePair<TKey, TValue> item)
+		{
+			Node node = this._FindNode(item.Key);
+
+			return node != null && node.Value.Equals(item.Value);
+		}
+
+		/// <summary>
+		/// Copies the elements from the tree into the array, beginning at arrayIndex
+		/// </summary>
+		/// <param name="array"></param>
+		/// <param name="arrayIndex"></param>
+		/// <exception cref="ArgumentException">Thrown when array is null</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when index is less than 0</exception>
+		/// <exception cref="ArgumentException">Thrown when the number of elements in the tree is greated than the available space from index to the end of the destination array</exception>
+		public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+		{
+			if (array == null)
+				throw new ArgumentException("null parameter", nameof(array));
+
+			if (this.Count > (array.Length - arrayIndex))
+				throw new ArgumentException("The number of elements in the tree is greated than the available space from index to the end of the destination array", nameof(arrayIndex));
+
+			if (arrayIndex < 0)
+				throw new ArgumentException("arrayIndex less then zero", nameof(arrayIndex));
+
+			IEnumerator<KeyValuePair<TKey, TValue>> allNodes = this.GetEnumerator();
+			for (int i = 0; i < this.Count; i++)
+			{
+				array[i + arrayIndex] = allNodes.Current;
+				if (!allNodes.MoveNext())
+					break;
+			}
+        }
+
+		public bool Remove(KeyValuePair<TKey, TValue> item)
+		{
+			Node node = this._FindNode(item.Key);
+
+			if (node != null && node.Value.Equals(item.Value))
+			{
+				this._Remove(node);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+		{
+			foreach (Node node in this._GetSubTree(this._Root))
+			{
+				yield return new KeyValuePair<TKey, TValue>(node.Key, node.Value);
+			}
+
+			yield break;
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			// Lets call the generic version here
+			return this.GetEnumerator();
 		}
 	}
 }
