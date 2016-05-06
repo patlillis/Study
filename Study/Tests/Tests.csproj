@@ -6,8 +6,8 @@
     <ProjectGuid>{F6353D63-9EEA-410A-915A-A063CB5728E1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>StudyTests</RootNamespace>
-    <AssemblyName>StudyTests</AssemblyName>
+    <RootNamespace>Tests</RootNamespace>
+    <AssemblyName>Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -57,9 +57,13 @@
     <Compile Include="SplayTreeTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Study\Study.csproj">
-      <Project>{554e8742-2a08-4619-a9cf-62ebfce1ee37}</Project>
-      <Name>Study</Name>
+    <ProjectReference Include="..\Algorithms\Algorithms.csproj">
+      <Project>{c346884b-de7f-47aa-aca2-e4b41fe34756}</Project>
+      <Name>Algorithms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataStructures\DataStructures.csproj">
+      <Project>{2f06c01f-9de8-41d8-b017-52519e0e19a5}</Project>
+      <Name>DataStructures</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

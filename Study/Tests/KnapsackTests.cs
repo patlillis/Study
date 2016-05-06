@@ -1,11 +1,11 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Study;
-using Item = Study.KnapsackProblem.Item;
-using System.Linq;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Study.Algorithms;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Item = Study.Algorithms.KnapsackProblem.Item;
 
-namespace StudyTests
+namespace Study.Tests
 {
 	[TestClass]
 	public class KnapsackTests

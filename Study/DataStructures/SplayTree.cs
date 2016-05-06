@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Study
+namespace Study.DataStructures
 {
 	/// <summary>
 	/// A self-adjusting binary search tree with the additional property that recently accessed elements are quick to access again.

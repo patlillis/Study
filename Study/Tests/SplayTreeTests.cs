@@ -1,10 +1,10 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Study;
-using System.Linq;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Study.DataStructures;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace StudyTests
+namespace Study.Tests
 {
 	[TestClass]
 	public class SplayTreeTests
