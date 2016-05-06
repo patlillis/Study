@@ -1,5 +1,5 @@
 # study
-Implementations of various Data Structures and Algorithms
+C# Implementations of various Data Structures and Algorithms
 
 
 ## Data Structures
