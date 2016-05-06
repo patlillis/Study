@@ -60,7 +60,7 @@ namespace Study
 		{
 			get { return this.Find(key); }
 
-			set { this.Add(key, value); }
+			set { this._Add(key, value, true); }
 		}
 
 

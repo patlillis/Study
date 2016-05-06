@@ -30,9 +30,9 @@ namespace StudyTests
 					int value1 = this._Rand.Next();
 					int value2 = this._Rand.Next();
 
-					t.Add(key, value1);
+					t[key] = value1;
 					Assert.AreEqual(t.Find(key), value1);
-					t.Add(key, value2);
+					t[key] = value2;
 					Assert.AreEqual(t.Find(key), value2);
 
 					addedKeys[key] = value2;
@@ -92,12 +92,15 @@ namespace StudyTests
 					int key = this._Rand.Next();
 
 					if (addedKeys.Add(key))
+					{
 						count++;
 
-					t.Add(key, this._Rand.Next());
-					Assert.AreEqual(t.Count, count);
-					t.Add(key, this._Rand.Next());
-					Assert.AreEqual(t.Count, count);
+						t[key] = this._Rand.Next();
+						Assert.AreEqual(t.Count, count);
+						t[key] = this._Rand.Next();
+						Assert.AreEqual(t.Count, count);
+
+					}
 				}
 
 				count = t.Count;
@@ -116,7 +119,7 @@ namespace StudyTests
 				{
 					int key = this._Rand.Next();
 
-					t.Add(key, this._Rand.Next());
+					t[key] = this._Rand.Next();
 					Assert.AreEqual(t.Count, 1);
 
 					t.Remove(key);
