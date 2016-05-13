@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,79 +9,154 @@ namespace DataStructures
 {
 	public class Trie
 	{
-		public static string ALPHABET = "abcdefghijklmnopqrstuvwxyz";
-
 		private class Node
 		{
-			public char Value;
+			public char C { get; set; }
+			public Dictionary<char, Node> Children { get; set; }
+			public Node Parent { get; set; }
+			public bool IsTerminal { get; set; }
 
-			public Node[] Children;
-
-			public Node(char value)
+			public Node(Node parent, char c)
 			{
-				Value = value;
-				Children = new Node[ALPHABET.Length];
+				Parent = parent;
+				C = c;
+				Children = new Dictionary<char, Node>();
+				IsTerminal = false;
+			}
+
+			public string Word
+			{
+				get
+				{
+					StringBuilder sb = new StringBuilder();
+					sb.Insert(0, C.ToString(CultureInfo.InvariantCulture));
+
+					Node node = Parent;
+					while (node != null)
+					{
+						sb.Insert(0, node.C.ToString(CultureInfo.InvariantCulture));
+						node = node.Parent;
+					}
+
+					return sb.ToString();
+				}
 			}
 		}
-
-		private Dictionary<int, char> _CharacterByIndex = new Dictionary<int, char>();
-		private Dictionary<char, int> _IndexByCharacter = new Dictionary<char, int>();
-
+		
 		private Node _Root { get; set; }
+
+		private bool _CaseSensitive { get; set; }
 
 		public int Count { get; set; }
 
-		public Trie()
+		public Trie(bool caseSensitive = false)
 		{
-			for (int i = 0; i < ALPHABET.Length; i++)
+			_CaseSensitive = caseSensitive;
+		}
+
+		public Trie(IEnumerable<string> words, bool caseSensitive = false)
+			: this(caseSensitive)
+		{
+			foreach (string word in words)
 			{
-				_CharacterByIndex[i] = ALPHABET[i];
-				_IndexByCharacter[ALPHABET[i]] = i;
+				Add(word);
 			}
 		}
 
-		public void Add(string value)
+		private Node _FindNode(string word)
 		{
-			Node node = _Root;
-			int i = 0;
+			word = NormalizeWord(word);
 
-			// Match as much of the string as we can
-			for (; i < value.Length; i++)
-			{
-				if (node.Children[value[i]] != null)
-					node = node.Children[value[i]];
-				else
-					break;
-			}
+			word = NormalizeWord(word);
 
-			// Append new nodes, if necessary
-			for (; i < value.Length; i++)
-			{
-				node.Children[value[i]] = new Node(value[i]);
-				node = node.Children[value[i]];
-			}
-		}
+			if (String.IsNullOrWhiteSpace(word))
+				return null;
 
-		public void Remove(string value)
-		{
-
-		}
-
-		public bool Contains(string value)
-		{
 			Node node = _Root;
 
-			foreach (char c in value)
+			foreach (char c in word)
 			{
-				node = node.Children[_IndexByCharacter[c]];
-				if (node == null)
-					break;
+				if (!node.Children.ContainsKey(c))
+					return null;
+
+				node = node.Children[c];
 			}
 
-			if (node != null)
-				return true;
+			if (node.IsTerminal)
+				return node;
 			else
-				return false;
+				return null;
+		}
+
+		private string NormalizeWord(string word)
+		{
+			if (String.IsNullOrWhiteSpace(word))
+				word = String.Empty;
+
+			word = word.Trim();
+
+			if (!_CaseSensitive)
+				word = word.ToLowerInvariant();
+
+			return word;
+		}
+
+		public void Add(string word)
+		{
+			word = NormalizeWord(word);
+
+			Node node = _Root;
+
+			foreach (char c in word)
+			{
+				if (!node.Children.ContainsKey(c))
+					node.Children.Add(c, new Node(node, c));
+
+				node = node.Children[c];
+			}
+
+			node.IsTerminal = true;
+		}
+
+		public void Remove(string word)
+		{
+			Node node = _FindNode(word);
+
+			if (node == null)
+				return;
+
+			//Case 1 - node has children.
+			//	don't delete, just set IsTerminal to false
+			if (node.Children.Count > 0)
+			{
+				node.IsTerminal = false;
+			}
+			//Case 2 - Node has no children.
+			// delete node, and any parents that don't have children and aren't terminals.
+			else
+			{
+				char c = node.C;
+				node = node.Parent;
+
+				while (node != null)
+				{
+					node.Children.Remove(c);
+
+					//See if we should continue up the tree
+					if (node.Children.Count == 0 && !node.IsTerminal)
+					{
+						c = node.C;
+						node = node.Parent;
+					}
+				}
+			}
+		}
+
+		public bool Contains(string word)
+		{
+			Node node = _FindNode(word);
+
+			return node != null;
 		}
 
 		public void Clear()
