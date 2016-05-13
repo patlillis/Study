@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Study.DataStructures
 {
 	/// <summary>
 	/// A self-adjusting binary search tree with the additional property that recently accessed elements are quick to access again.
 	/// </summary>
-	public sealed class SplayTree<TKey, TValue> : IDictionary<TKey, TValue> where TKey : IComparable<TKey>
+	public class SplayTree<TKey, TValue> : IDictionary<TKey, TValue> where TKey : IComparable<TKey>
 	{
 		/// <summary>
 		/// Inner nodes
@@ -26,7 +27,6 @@ namespace Study.DataStructures
 				this.Value = value;
 			}
 		}
-		
 
 		private Node _Root { get; set; }
 
@@ -36,7 +36,11 @@ namespace Study.DataStructures
 		{
 			get
 			{
-				throw new NotImplementedException();
+				List<TKey> keys = new List<TKey>();
+				foreach (Node node in this._GetSubTree(_Root))
+					keys.Add(node.Key);
+
+				return keys;
 			}
 		}
 
@@ -44,7 +48,11 @@ namespace Study.DataStructures
 		{
 			get
 			{
-				throw new NotImplementedException();
+				List<TValue> values = new List<TValue>();
+				foreach (Node node in this._GetSubTree(_Root))
+					values.Add(node.Value);
+
+				return values;
 			}
 		}
 
