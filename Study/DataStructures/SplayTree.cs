@@ -407,8 +407,6 @@ namespace Study.DataStructures
 						yield return r;
 				}
 			}
-
-			yield break;
 		}
 
 		#endregion
@@ -549,8 +547,6 @@ namespace Study.DataStructures
 			{
 				yield return new KeyValuePair<TKey, TValue>(node.Key, node.Value);
 			}
-
-			yield break;
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
