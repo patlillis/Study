@@ -24,7 +24,7 @@ namespace Study.Tests
 
 			// 0 capacity, 0 items => 0
 			solution = KnapsackProblem.Solve(0, new List<Item>());
-            Assert.AreEqual(solution.Count, 0);
+			Assert.AreEqual(solution.Count, 0);
 
 
 			// 0 capacity, 1 item => 0

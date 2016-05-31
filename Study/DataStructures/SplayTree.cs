@@ -324,7 +324,7 @@ namespace Study.DataStructures
 					{
 						node.Value = value;
 						inserted = true;
-                    }
+					}
 					break;
 				}
 			}
@@ -344,7 +344,7 @@ namespace Study.DataStructures
 
 				this.Count++;
 				inserted = true;
-            }
+			}
 
 			this._Splay(node);
 
@@ -498,6 +498,11 @@ namespace Study.DataStructures
 			return node != null && node.Value.Equals(item.Value);
 		}
 
+		public bool Contains(TKey key, TValue value)
+		{
+			return Contains(new KeyValuePair<TKey, TValue>(key, value));
+		}
+
 		/// <summary>
 		/// Copies the elements from the tree into the array, beginning at arrayIndex
 		/// </summary>
@@ -524,7 +529,7 @@ namespace Study.DataStructures
 				if (!allNodes.MoveNext())
 					break;
 			}
-        }
+		}
 
 		public bool Remove(KeyValuePair<TKey, TValue> item)
 		{
