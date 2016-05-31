@@ -11,8 +11,6 @@ namespace Study.Tests
 	{
 		private Random _Rand { get; set; }
 
-		private bool[] _CaseSensitive = new bool[] { true, false };
-
 		private Dictionary<string, string> _Words = new Dictionary<string, string>();
 
 		private Trie<string> _Trie { get; set; }
@@ -347,6 +345,6 @@ namespace Study.Tests
 			_Trie.CopyTo(arr, 0);
 
 			//TODO: Add Asserts
-        }
+		}
 	}
 }
