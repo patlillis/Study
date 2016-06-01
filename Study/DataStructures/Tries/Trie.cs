@@ -31,14 +31,6 @@ namespace Study.DataStructures.Tries
 				Parent = parent;
 				C = c;
 			}
-
-			public Node(Node parent, char c, string word, TValue value = default(TValue))
-				: this(parent, c)
-			{
-				Key = word;
-				Value = value;
-				IsTerminal = true;
-			}
 		}
 
 		public Trie()
@@ -99,8 +91,6 @@ namespace Study.DataStructures.Tries
 
 		private Node _FindNode(string key)
 		{
-			key = _NormalizeWord(key);
-
 			Node node = _Root;
 
 			foreach (char c in key)
@@ -117,14 +107,6 @@ namespace Study.DataStructures.Tries
 				return null;
 		}
 
-		private string _NormalizeWord(string key)
-		{
-			if (String.IsNullOrWhiteSpace(key))
-				key = String.Empty;
-
-			return key;
-		}
-
 		/// <summary>
 		/// Add key/value pair to tree
 		/// </summary>
@@ -135,8 +117,6 @@ namespace Study.DataStructures.Tries
 		private bool _Add(string key, TValue value, bool overwite)
 		{
 			bool inserted = false;
-
-			key = _NormalizeWord(key);
 
 			Node node = _Root;
 			int charIndex = 0;
@@ -340,19 +320,19 @@ namespace Study.DataStructures.Tries
 
 
 			IEnumerator<KeyValuePair<string, TValue>> allNodes = this.GetEnumerator();
-			for (int i = 0; i < this.Count; i++)
-			{
-				array[i + arrayIndex] = allNodes.Current;
-				if (!allNodes.MoveNext())
-					break;
-			}
+
+
+			int i = 0;
+			while (allNodes.MoveNext())
+				array[i++ + arrayIndex] = allNodes.Current;
 		}
 
 		public IEnumerator<KeyValuePair<string, TValue>> GetEnumerator()
 		{
 			foreach (Node node in this._GetSubTrie(this._Root))
 			{
-				yield return new KeyValuePair<string, TValue>(node.Key, node.Value);
+				if (node.IsTerminal)
+					yield return new KeyValuePair<string, TValue>(node.Key, node.Value);
 			}
 		}
 

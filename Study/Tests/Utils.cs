@@ -1,13 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace Study.Tests
 {
 	public static class Utils
 	{
+		public static List<T> Shuffle<T>(List<T> arr)
+		{
+			Random r = new Random();
+
+			List<KeyValuePair<int, T>> list = new List<KeyValuePair<int, T>>();
+
+			// Add all strings from array
+			// Add new random int each time
+			foreach (T t in arr)
+			{
+				list.Add(new KeyValuePair<int, T>(r.Next(), t));
+			}
+
+			// Sort the list by the random number
+			var sorted = list.OrderBy(l => l.Key).ToList();
+
+			// Allocate new string array
+			List<T> result = new List<T>();
+
+			// Copy values to array
+			foreach (var item in sorted)
+			{
+				result.Add(item.Value);
+			}
+
+			// Return copied array
+			return result;
+		}
+
 		public static readonly List<string> Words = new List<string>
 		{
 			"abandon",

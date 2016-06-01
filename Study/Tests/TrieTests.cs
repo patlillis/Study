@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Study.DataStructures.Tries;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -343,8 +344,54 @@ namespace Study.Tests
 
 			var arr = new KeyValuePair<string, string>[_Words.Count];
 			_Trie.CopyTo(arr, 0);
+			foreach (var item in arr)
+			{
+				Assert.IsNotNull(item.Key);
+				Assert.IsNotNull(item.Value);
 
-			//TODO: Add Asserts
+				Assert.IsTrue(_Words.ContainsKey(item.Key));
+				Assert.AreEqual(_Words[item.Key], item.Value);
+			}
+		}
+
+		[TestMethod]
+		public void GetEnumeratorTest()
+		{
+			IEnumerator<KeyValuePair<string, string>> enumerator = _Trie.GetEnumerator();
+			Assert.IsNotNull(enumerator);
+
+			int count = 0;
+			while (enumerator.MoveNext())
+			{
+				count++;
+				var item = enumerator.Current;
+				Assert.IsTrue(_Words.ContainsKey(item.Key));
+				Assert.AreEqual(item.Value, _Words[item.Key]);
+			}
+
+			Assert.AreEqual(count, _Words.Count);
+		}
+
+		[TestMethod]
+		public void GetIEnumerableEnumeratorTest()
+		{
+			IEnumerator enumerator = ((IEnumerable)_Trie).GetEnumerator();
+			Assert.IsNotNull(enumerator);
+
+			int count = 0;
+			while (enumerator.MoveNext())
+			{
+				count++;
+				var item = enumerator.Current;
+				Assert.IsInstanceOfType(item, typeof(KeyValuePair<string, string>));
+
+				KeyValuePair<string, string> kvp = (KeyValuePair<string, string>)item;
+
+				Assert.IsTrue(_Words.ContainsKey(kvp.Key));
+				Assert.AreEqual(kvp.Value, _Words[kvp.Key]);
+			}
+
+			Assert.AreEqual(count, _Words.Count);
 		}
 	}
 }

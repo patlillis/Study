@@ -109,5 +109,20 @@ namespace Study.Tests
 			Assert.IsTrue(solution.Contains(1));
 			Assert.IsTrue(solution.Contains(2));
 		}
+
+		[TestMethod]
+		public void ToStringTest()
+		{
+			for (int i = 0; i < 1000; i++)
+			{
+				Item item = new Item
+				{
+					Weight = _Rand.Next(),
+					Value = _Rand.Next()
+				};
+
+				Assert.AreEqual(item.ToString(), $"Weight: {item.Weight}, Value: {item.Value}");
+			}
+		}
 	}
 }

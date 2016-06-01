@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Study.DataStructures;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,16 +24,18 @@ namespace Study.Tests
 			int numEntries = _Rand.Next(1000, 2000);
 			for (int i = 0; i < numEntries; i++)
 			{
-				string key = "";
+				string key = Utils.Words[_Rand.Next(0, Utils.Words.Count)];
+				string value = Utils.Words[_Rand.Next(0, Utils.Words.Count)];
+
 				while (addedKeys.Contains(key))
 				{
 					key = Utils.Words[_Rand.Next(0, Utils.Words.Count)];
 				}
 
-				string value = Utils.Words[_Rand.Next(0, Utils.Words.Count)];
-
-				_Words.Add(key, value);
 				addedKeys.Add(key);
+				
+				value = Utils.Words[_Rand.Next(0, Utils.Words.Count)];
+				_Words.Add(key, value);
 			}
 		}
 
@@ -266,7 +269,7 @@ namespace Study.Tests
 		[TestMethod]
 		public void RemoveKeyTest()
 		{
-			foreach (string w in Utils.Words)
+			foreach (string w in Utils.Shuffle(Utils.Words))
 			{
 				bool removed = _Tree.Remove(w);
 				Assert.AreEqual(removed, _Words.ContainsKey(w));
@@ -278,7 +281,7 @@ namespace Study.Tests
 		[TestMethod]
 		public void RemoveTest()
 		{
-			foreach (string w in Utils.Words)
+			foreach (string w in Utils.Shuffle(Utils.Words))
 			{
 				if (_Words.ContainsKey(w))
 				{
@@ -299,7 +302,7 @@ namespace Study.Tests
 		[TestMethod]
 		public void FindTest()
 		{
-			foreach (var w in Utils.Words)
+			foreach (string w in Utils.Shuffle(Utils.Words))
 			{
 				if (_Words.ContainsKey(w))
 				{
@@ -326,7 +329,7 @@ namespace Study.Tests
 		[TestMethod]
 		public void TryGetValueTest()
 		{
-			foreach (var w in Utils.Words)
+			foreach (string w in Utils.Shuffle(Utils.Words))
 			{
 				string value;
 
@@ -349,7 +352,7 @@ namespace Study.Tests
 		[TestMethod]
 		public void ContainsKeyTest()
 		{
-			foreach (var w in Utils.Words)
+			foreach (string w in Utils.Shuffle(Utils.Words))
 			{
 				Assert.AreEqual(_Words.ContainsKey(w), _Tree.ContainsKey(w));
 			}
@@ -358,7 +361,7 @@ namespace Study.Tests
 		[TestMethod]
 		public void ContainsTest()
 		{
-			foreach (var w in Utils.Words)
+			foreach (string w in Utils.Shuffle(Utils.Words))
 			{
 				if (_Words.ContainsKey(w))
 				{
@@ -376,7 +379,7 @@ namespace Study.Tests
 		[TestMethod]
 		public void ContainsKVPTest()
 		{
-			foreach (var w in Utils.Words)
+			foreach (string w in Utils.Shuffle(Utils.Words))
 			{
 				if (_Words.ContainsKey(w))
 				{
@@ -423,8 +426,54 @@ namespace Study.Tests
 
 			var arr = new KeyValuePair<string, string>[_Words.Count];
 			_Tree.CopyTo(arr, 0);
+			foreach (var item in arr)
+			{
+				Assert.IsNotNull(item.Key);
+				Assert.IsNotNull(item.Value);
 
-			//TODO: Add Asserts
+				Assert.IsTrue(_Words.ContainsKey(item.Key));
+				Assert.AreEqual(_Words[item.Key], item.Value);
+			}
+		}
+
+		[TestMethod]
+		public void GetEnumeratorTest()
+		{
+			IEnumerator<KeyValuePair<string, string>> enumerator = _Tree.GetEnumerator();
+			Assert.IsNotNull(enumerator);
+
+			int count = 0;
+			while (enumerator.MoveNext())
+			{
+				count++;
+				var item = enumerator.Current;
+				Assert.IsTrue(_Words.ContainsKey(item.Key));
+				Assert.AreEqual(item.Value, _Words[item.Key]);
+			}
+
+			Assert.AreEqual(count, _Words.Count);
+		}
+
+		[TestMethod]
+		public void GetIEnumerableEnumeratorTest()
+		{
+			IEnumerator enumerator = ((IEnumerable)_Tree).GetEnumerator();
+			Assert.IsNotNull(enumerator);
+
+			int count = 0;
+			while (enumerator.MoveNext())
+			{
+				count++;
+				var item = enumerator.Current;
+				Assert.IsInstanceOfType(item, typeof(KeyValuePair<string, string>));
+
+				KeyValuePair<string, string> kvp = (KeyValuePair<string, string>)item;
+
+				Assert.IsTrue(_Words.ContainsKey(kvp.Key));
+				Assert.AreEqual(kvp.Value, _Words[kvp.Key]);
+			}
+
+			Assert.AreEqual(count, _Words.Count);
 		}
 	}
 }

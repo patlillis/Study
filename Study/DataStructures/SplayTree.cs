@@ -278,17 +278,6 @@ namespace Study.DataStructures
 		}
 
 		/// <summary>
-		/// Find the largest descendent of n
-		/// </summary>
-		private Node _SubtreeMaximum(Node n)
-		{
-			while (n != null && n.Right != null)
-				n = n.Right;
-
-			return n;
-		}
-
-		/// <summary>
 		/// Add key/value pair to tree
 		/// </summary>
 		/// <param name="key">Key to add</param>
@@ -356,9 +345,6 @@ namespace Study.DataStructures
 			// If key wasn't in tree, don't worry about it
 			if (node != null)
 			{
-				// Splay
-				this._Splay(node);
-
 				if (node.Left == null)
 				{
 					// Replace node with its right child
@@ -516,19 +502,18 @@ namespace Study.DataStructures
 			if (array == null)
 				throw new ArgumentException("null parameter", nameof(array));
 
-			if (this.Count > (array.Length - arrayIndex))
-				throw new ArgumentException("The number of elements in the tree is greated than the available space from index to the end of the destination array", nameof(arrayIndex));
-
 			if (arrayIndex < 0)
 				throw new ArgumentException("arrayIndex less then zero", nameof(arrayIndex));
 
+			if (this.Count > (array.Length - arrayIndex))
+				throw new ArgumentException("The number of elements in the tree is greated than the available space from index to the end of the destination array", nameof(arrayIndex));
+
+
 			IEnumerator<KeyValuePair<TKey, TValue>> allNodes = this.GetEnumerator();
-			for (int i = 0; i < this.Count; i++)
-			{
-				array[i + arrayIndex] = allNodes.Current;
-				if (!allNodes.MoveNext())
-					break;
-			}
+
+			int i = 0;
+			while (allNodes.MoveNext())
+				array[i++ + arrayIndex] = allNodes.Current;
 		}
 
 		public bool Remove(KeyValuePair<TKey, TValue> item)
