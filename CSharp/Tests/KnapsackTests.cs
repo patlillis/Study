@@ -1,128 +1,128 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Study.Algorithms;
+using CSharp.Algorithms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Item = Study.Algorithms.KnapsackProblem.Item;
+using Item = CSharp.Algorithms.KnapsackProblem.Item;
 
-namespace Study.Tests
+namespace CSharp.Tests
 {
-	[TestClass]
-	public class KnapsackTests
-	{
-		private Random _Rand { get; set; }
+    [TestClass]
+    public class KnapsackTests
+    {
+        private Random _Rand { get; set; }
 
-		public KnapsackTests()
-		{
-			this._Rand = new Random();
-		}
+        public KnapsackTests()
+        {
+            this._Rand = new Random();
+        }
 
-		[TestMethod]
-		public void CapacityZeroTest()
-		{
-			List<int> solution;
+        [TestMethod]
+        public void CapacityZeroTest()
+        {
+            List<int> solution;
 
-			// 0 capacity, 0 items => 0
-			solution = KnapsackProblem.Solve(0, new List<Item>());
-			Assert.AreEqual(solution.Count, 0);
-
-
-			// 0 capacity, 1 item => 0
-			List<Item> items = new List<Item>
-			{
-				new Item(5, 5)
-			};
-			
-			solution = KnapsackProblem.Solve(0, items);
-			Assert.AreEqual(solution.Count, 0);
+            // 0 capacity, 0 items => 0
+            solution = KnapsackProblem.Solve(0, new List<Item>());
+            Assert.AreEqual(solution.Count, 0);
 
 
-			// 0 capacity, bunch of items => 0
-			items = new List<Item>();
-			for (int i = 0; i < 100; i++)
-				items.Add(new Item(this._Rand.Next(), this._Rand.Next()));
+            // 0 capacity, 1 item => 0
+            List<Item> items = new List<Item>
+            {
+                new Item(5, 5)
+            };
+            
+            solution = KnapsackProblem.Solve(0, items);
+            Assert.AreEqual(solution.Count, 0);
 
-			solution = KnapsackProblem.Solve(0, items);
-			Assert.AreEqual(solution.Count, 0);
-		}
 
-		[TestMethod]
-		public void FindsSolutionTest()
-		{
-			for (int i = 0; i < 10; i++)
-			{
-				List<Item> items = new List<Item>();
+            // 0 capacity, bunch of items => 0
+            items = new List<Item>();
+            for (int i = 0; i < 100; i++)
+                items.Add(new Item(this._Rand.Next(), this._Rand.Next()));
 
-				for (int j = 0; j < 1000; j++)
-				{
-					Item item = new Item(this._Rand.Next(1, 1000), this._Rand.Next());
-					items.Add(item);
-				}
+            solution = KnapsackProblem.Solve(0, items);
+            Assert.AreEqual(solution.Count, 0);
+        }
 
-				List<int> weights = items.Select(item => item.Weight).ToList();
-				int capacity = this._Rand.Next(weights.Min(), weights.Max());
-				List<int> solution = KnapsackProblem.Solve(capacity, items);
-				int totalUsedCapacity = solution.Sum(s => weights[s]);
-				Assert.IsTrue(totalUsedCapacity <= capacity);
-			}
-		}
+        [TestMethod]
+        public void FindsSolutionTest()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                List<Item> items = new List<Item>();
 
-		[TestMethod]
-		public void GreedyTest()
-		{
-			List<int> solution;
+                for (int j = 0; j < 1000; j++)
+                {
+                    Item item = new Item(this._Rand.Next(1, 1000), this._Rand.Next());
+                    items.Add(item);
+                }
 
-			// Most valuable item should be the only one included
-			List<Item> items = new List<Item>
-			{
-				new Item(1, 500),
-				new Item(1, 300),
-				new Item(2, 500)
-			};
+                List<int> weights = items.Select(item => item.Weight).ToList();
+                int capacity = this._Rand.Next(weights.Min(), weights.Max());
+                List<int> solution = KnapsackProblem.Solve(capacity, items);
+                int totalUsedCapacity = solution.Sum(s => weights[s]);
+                Assert.IsTrue(totalUsedCapacity <= capacity);
+            }
+        }
 
-			solution = KnapsackProblem.Solve(1, items);
-			Assert.AreEqual(solution.Count, 1);
-			Assert.IsTrue(solution.Contains(0));
+        [TestMethod]
+        public void GreedyTest()
+        {
+            List<int> solution;
 
-			items.Add(new Item(1, 500));
-			solution = KnapsackProblem.Solve(2, items);
-			Assert.AreEqual(solution.Count, 2);
-			Assert.IsTrue(solution.Contains(0));
-			Assert.IsTrue(solution.Contains(3));
-		}
+            // Most valuable item should be the only one included
+            List<Item> items = new List<Item>
+            {
+                new Item(1, 500),
+                new Item(1, 300),
+                new Item(2, 500)
+            };
 
-		[TestMethod]
-		public void CombineLessValuableTest()
-		{
-			List<int> solution;
+            solution = KnapsackProblem.Solve(1, items);
+            Assert.AreEqual(solution.Count, 1);
+            Assert.IsTrue(solution.Contains(0));
 
-			// Most valuable item should be the only one included
-			List<Item> items = new List<Item>
-			{
-				new Item(55, 55),
-				new Item(50, 45),
-				new Item(50, 45)
-			};
+            items.Add(new Item(1, 500));
+            solution = KnapsackProblem.Solve(2, items);
+            Assert.AreEqual(solution.Count, 2);
+            Assert.IsTrue(solution.Contains(0));
+            Assert.IsTrue(solution.Contains(3));
+        }
 
-			solution = KnapsackProblem.Solve(100, items);
-			Assert.AreEqual(solution.Count, 2);
-			Assert.IsTrue(solution.Contains(1));
-			Assert.IsTrue(solution.Contains(2));
-		}
+        [TestMethod]
+        public void CombineLessValuableTest()
+        {
+            List<int> solution;
 
-		[TestMethod]
-		public void ToStringTest()
-		{
-			for (int i = 0; i < 1000; i++)
-			{
-				Item item = new Item
-				{
-					Weight = _Rand.Next(),
-					Value = _Rand.Next()
-				};
+            // Most valuable item should be the only one included
+            List<Item> items = new List<Item>
+            {
+                new Item(55, 55),
+                new Item(50, 45),
+                new Item(50, 45)
+            };
 
-				Assert.AreEqual(item.ToString(), $"Weight: {item.Weight}, Value: {item.Value}");
-			}
-		}
-	}
+            solution = KnapsackProblem.Solve(100, items);
+            Assert.AreEqual(solution.Count, 2);
+            Assert.IsTrue(solution.Contains(1));
+            Assert.IsTrue(solution.Contains(2));
+        }
+
+        [TestMethod]
+        public void ToStringTest()
+        {
+            for (int i = 0; i < 1000; i++)
+            {
+                Item item = new Item
+                {
+                    Weight = _Rand.Next(),
+                    Value = _Rand.Next()
+                };
+
+                Assert.AreEqual(item.ToString(), $"Weight: {item.Weight}, Value: {item.Value}");
+            }
+        }
+    }
 }
