@@ -35,7 +35,6 @@ TEST_CASE("tail()") {
 
 TEST_CASE("is_empty()") {
     LinkedList<int> l;
-    int i;
 
     SECTION("is initially true") { REQUIRE(l.is_empty() == true); }
 }
